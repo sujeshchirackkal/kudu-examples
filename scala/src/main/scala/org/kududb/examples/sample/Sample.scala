@@ -30,10 +30,10 @@ object Sample extends App {
       .build()
 
     val columns = new ListBuffer[ColumnSchema]
-      columns ++= Seq(keyColumn, valueColumn)
+    columns ++= Seq(keyColumn, valueColumn)
 
     val schema: Schema = new Schema(columns.asJava)
-      kuduClient.createTable(tableName, schema)
+    kuduClient.createTable(tableName, schema)
 
     val table: KuduTable = kuduClient.openTable(tableName)
     val kuduSession: KuduSession = kuduClient.newSession()
@@ -65,7 +65,7 @@ object Sample extends App {
         println(s"Value from scan ${result.getString(0)}")
       }
     }
-
+    kuduSession.flush()
     println(s"scanning completed successfully from table ${tableName}")
   } catch {
     case e: Exception => {
@@ -73,6 +73,13 @@ object Sample extends App {
     }
   }
   finally {
-    kuduClient.shutdown()
+    try {
+      kuduClient.deleteTable(tableName)
+      kuduClient.shutdown()
+    } catch {
+      case e: Exception => {
+        e.printStackTrace()
+      }
+    }
   }
 }
