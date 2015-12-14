@@ -46,7 +46,7 @@ object Sample extends App {
       row.addString(1, s"value${i}")
       kuduSession.apply(insert)
     }
-
+    kuduSession.flush()
     println(s"inserted records successfully into table ${tableName}")
 
     // read the table and print the values
@@ -65,7 +65,6 @@ object Sample extends App {
         println(s"Value from scan ${result.getString(0)}")
       }
     }
-    kuduSession.flush()
     println(s"scanning completed successfully from table ${tableName}")
   } catch {
     case e: Exception => {
